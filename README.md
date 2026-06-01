@@ -41,3 +41,35 @@ API docs: http://localhost:8000/docs
 | POST | `/api/v1/documents/upload` | Upload PDF, chunk, embed, store |
 | POST | `/api/v1/queries/ask` | RAG query + RAGAS evaluation |
 | GET | `/api/v1/metrics/summary` | Aggregated evaluation metrics |
+
+## Architecture
+
+PDF Upload
+    ↓
+Chunking
+    ↓
+Embedding Generation
+    ↓
+ChromaDB Vector Store
+    ↓
+Retriever
+    ↓
+Gemini LLM
+    ↓
+RAGAS Evaluation
+    ↓
+Metrics Persistence (PostgreSQL)
+
+## Features
+
+- PDF ingestion
+- Vector search using ChromaDB
+- Gemini-powered answer generation
+- Faithfulness evaluation
+- Answer relevancy evaluation
+- Hallucination detection
+- Context precision evaluation
+- Context recall evaluation
+- Docker deployment
+- PostgreSQL persistence
+- REST API with Swagger UI
