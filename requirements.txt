@@ -1,0 +1,42 @@
+# =============================================================================
+# Pinned dependency set for Self-Evaluating RAG (validated against RAGAS 0.4.3)
+# Install: pip install -r requirements.txt
+# See DEPENDENCIES.md for rationale per package.
+# =============================================================================
+
+# --- RAGAS 0.4 (orchestrates LangChain + judge metrics) ---
+ragas==0.4.3
+
+# --- LangChain stack (0.3.x line: stable with RAGAS 0.4 + google-genai 2.x) ---
+langchain==0.3.25
+langchain-core==0.3.65
+langchain-community==0.3.25
+langchain-google-genai==2.1.4
+langchain-openai==0.3.22
+langchain-text-splitters==0.3.8
+openai==1.82.1
+
+# --- Vector store (0.6.x: matches pre-1.0 API used in ChromaVectorStore) ---
+chromadb==0.6.3
+
+# --- API & persistence ---
+fastapi==0.115.12
+uvicorn[standard]==0.34.3
+python-multipart==0.0.20
+pydantic-settings==2.9.1
+sqlalchemy[asyncio]==2.0.41
+asyncpg==0.30.0
+alembic==1.16.2
+
+# --- RAGAS / HuggingFace dataset (RAGAS 0.4.3 requires datasets>=4.0) ---
+datasets==4.0.0
+
+# --- Document processing ---
+pypdf==5.6.0
+
+# --- HTTP client (RAGAS / LangChain transitive; explicit for stability) ---
+httpx==0.28.1
+
+# --- Dev / integration tests ---
+pytest==8.4.0
+pytest-asyncio==0.26.0

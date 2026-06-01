@@ -1,0 +1,67 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: rag
+      POSTGRES_PASSWORD: rag
+      POSTGRES_DB: rag_eval
+    ports:
+      - "5433:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U rag -d rag_eval"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+
+  api:
+    build: .
+    ports:
+      - "8001:8000"
+    environment:
+      APP_NAME: Self Evaluating RAG API
+      DEBUG: "false"
+      LOG_LEVEL: INFO
+      LLM_PROVIDER: ${LLM_PROVIDER:-openai}
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      OPENAI_MODEL: ${OPENAI_MODEL:-gpt-4o-mini}
+      OPENAI_EMBEDDING_MODEL: ${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}
+      # Gemini (only when LLM_PROVIDER=gemini)
+      GEMINI_API_KEY: ${GEMINI_API_KEY:-}
+      GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      GEMINI_EMBEDDING_MODEL: ${GEMINI_EMBEDDING_MODEL:-models/gemini-embedding-001}
+      DATABASE_URL: postgresql+asyncpg://rag:rag@postgres:5432/rag_eval
+      CHROMA_PERSIST_DIR: /app/data/chroma
+      CHROMA_COLLECTION_NAME: rag_chunks
+      UPLOAD_DIR: /app/data/uploads
+      CHUNK_SIZE: "1000"
+      CHUNK_OVERLAP: "200"
+      RETRIEVAL_TOP_K: "5"
+      HALLUCINATION_FAITHFULNESS_THRESHOLD: "0.5"
+      RAGAS_TIMEOUT_SECONDS: "180"
+      ENABLE_REFERENCE_METRICS: ${ENABLE_REFERENCE_METRICS:-true}
+    volumes:
+      - chroma_data:/app/data/chroma
+      - upload_data:/app/data/uploads
+    depends_on:
+      postgres:
+        condition: service_healthy
+    healthcheck:
+      test:
+        [
+          "CMD",
+          "python",
+          "-c",
+          "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/health')",
+        ]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 40s
+
+volumes:
+  postgres_data:
+  chroma_data:
+  upload_data:
